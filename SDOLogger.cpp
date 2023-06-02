@@ -4,7 +4,7 @@
 
 
 SDOLoggerStream::SDOLoggerStream() : 
-  m_level(RTC::Logger::RTL_INFO), m_logger(nullptr)
+  m_level(RTC::Logger::RTL_INFO), m_logger(nullptr), m_filter_all(true)
 {
 }
 
@@ -57,6 +57,23 @@ bool SDOLoggerStream::init(const coil::Properties& prop)
   }
 
   m_instance_name = prop["comp.instance_name"];
+  std::string filters = prop["logger.filter"];
+
+  if (coil::normalize(filters) == "all")
+  {
+    m_filter_all = true;
+  }
+  else
+  {
+    m_filter_all = false;
+  }
+
+  m_filters = coil::split(filters, ",");
+  for (auto &f : m_filters)
+  {
+    f = coil::eraseBothEndsBlank(f);
+  }
+  
 
   return true;
 }
@@ -66,9 +83,32 @@ void SDOLoggerStream::setConsumer(RTC::CorbaConsumer<OpenRTM::Logger>* logger)
   m_logger = logger;
 }
 
+bool SDOLoggerStream::logFilter(const std::string& name)
+{
+  if (!m_filter_all)
+  {
+    for (auto filter : m_filters)
+    {
+      if (filter == name)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
 void SDOLoggerStream::write(int level, const std::string& name, const std::string& date, const std::string& mes)
 {
   if (level >= m_level)
+  {
+    return;
+  }
+  if (!logFilter(name))
   {
     return;
   }

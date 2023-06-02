@@ -4,6 +4,7 @@
 
 #include <rtm/LogstreamBase.h>
 #include <rtm/CorbaConsumer.h>
+#include <coil/stringutil.h>
 #include "LoggerStub.h"
 
 class SDOLoggerStream
@@ -16,7 +17,10 @@ public:
   void write(int level, const std::string& name, const std::string& date, const std::string& mes) override;
   void setConsumer(RTC::CorbaConsumer<OpenRTM::Logger>* logger);
 private:
+  bool logFilter(const std::string& name);
   int m_level;
+  coil::vstring m_filters;
+  bool m_filter_all;
   std::string m_instance_name;
   RTC::CorbaConsumer<OpenRTM::Logger> *m_logger;
 };
