@@ -68,6 +68,10 @@ void SDOLoggerStream::setConsumer(RTC::CorbaConsumer<OpenRTM::Logger>* logger)
 
 void SDOLoggerStream::write(int level, const std::string& name, const std::string& date, const std::string& mes)
 {
+  if (level <= m_level)
+  {
+    return;
+  }
   OpenRTM::LogRecord record;
 
   auto now = std::chrono::system_clock::now().time_since_epoch();

@@ -16,7 +16,7 @@ public:
   void write(int level, const std::string& name, const std::string& date, const std::string& mes) override;
   void setConsumer(RTC::CorbaConsumer<OpenRTM::Logger>* logger);
 private:
-  unsigned int m_level;
+  int m_level;
   std::string m_instance_name;
   RTC::CorbaConsumer<OpenRTM::Logger> *m_logger;
 };
